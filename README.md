@@ -1,4 +1,12 @@
 # Modelo Lógico Relacional: Viveros
+----------
+> Alejandro Peraza González  
+> Gabriel García Jaubert  
+> Elena Rijo García  
+>
+> University of La Laguna
+>
+> 1 november 2021
 
 ## Imagen del diseño realizado con MySQL Workbench
 
