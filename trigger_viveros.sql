@@ -236,11 +236,11 @@ COMMIT;
 /* Create function 'create_email' */
 CREATE OR REPLACE FUNCTION create_email() RETURNS TRIGGER AS $create_email$
    BEGIN
-      IF NOT new.Correo <> NULL THEN
-        new.Correo := CONCAT(new.Nombre, '@', 'gmail.com');
+      IF new.Correo IS NULL THEN
+        new.Correo := CONCAT(new.Nombre, '@', TG_ARGV[0]);
       ELSE
-        IF NOT new.Correo SIMILAR TO '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$' THEN 
-          RAISE EXCEPTION 'Invalid email' 
+        IF new.Correo NOT LIKE '^([0-9a-zA-Z]([\+\-_\.][0-9a-zA-Z]+)*)+"@(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[a-zA-Z0-9]{2,17})$' THEN
+          RAISE EXCEPTION 'Invalid email'
           USING HINT = 'Please check your user email format';
         END IF;
       END IF;
@@ -252,4 +252,21 @@ $create_email$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS create_email ON EMPLEADO;
 
 CREATE TRIGGER create_email BEFORE INSERT ON EMPLEADO
-FOR EACH ROW EXECUTE PROCEDURE create_email();
+FOR EACH ROW EXECUTE PROCEDURE create_email('viveros.com');
+
+/* Create funtion 'locality_check' */
+CREATE OR REPLACE FUNCTION locality_check() RETURNS TRIGGER AS $locality_check$
+        BEGIN
+                IF ((new.localidad IS NOT NULL) AND (new.localidad = ANY(SELECT localidad FROM VIVEROS)))
+                        THEN
+                        RAISE EXCEPTION 'Existing locality';
+                END IF;
+                RETURN NEW;
+        END;
+$locality_check$ LANGUAGE plpgsql;
+
+/* Create trigger 'locality_check' */
+DROP TRIGGER IF EXISTS locality_check ON VIVEROS;
+
+CREATE TRIGGER locality_check BEFORE INSERT ON VIVEROS
+FOR EACH ROW EXECUTE PROCEDURE locality_check();
