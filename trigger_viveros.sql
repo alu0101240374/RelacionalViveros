@@ -239,7 +239,7 @@ CREATE OR REPLACE FUNCTION create_email() RETURNS TRIGGER AS $create_email$
       IF new.Correo IS NULL THEN
         new.Correo := CONCAT(new.Nombre, '@', TG_ARGV[0]);
       ELSE
-        IF new.Correo NOT LIKE '^([0-9a-zA-Z]([\+\-_\.][0-9a-zA-Z]+)*)+"@(([0-9a-zA-Z][-\w]*[0-9a-zA-Z]*\.)+[a-zA-Z0-9]{2,17})$' THEN
+        IF new.Correo !~ '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$' THEN
           RAISE EXCEPTION 'Invalid email'
           USING HINT = 'Please check your user email format';
         END IF;
