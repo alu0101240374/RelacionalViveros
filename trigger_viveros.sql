@@ -71,7 +71,7 @@ DROP TABLE IF EXISTS PRODUCTO;
 
 CREATE TABLE IF NOT EXISTS PRODUCTO (
   Cod_producto INT NOT NULL,
-  Stock INT NULL,
+  Stock INT NULL DEFAULT 0,
   Precio FLOAT NULL,
   PRIMARY KEY (Cod_producto));
 
@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS PRODUCTO_ubica_VIVEROS (
   PRODUCTO_Cod_producto INT NOT NULL,
   VIVEROS_Latitud INT NOT NULL,
   VIVEROS_Longitud INT NOT NULL,
+  Cantidad_Stock INT NOT NULL,
   CONSTRAINT fk_PRODUCTO_has_VIVEROS_PRODUCTO1
     FOREIGN KEY (PRODUCTO_Cod_producto)
     REFERENCES PRODUCTO (Cod_producto)
@@ -186,7 +187,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 
-INSERT INTO PRODUCTO (Cod_producto, Stock, Precio) VALUES (1111, NULL, 1.95);
+INSERT INTO PRODUCTO (Cod_producto, Precio) VALUES (1111, 1.95);
 
 COMMIT;
 
@@ -196,7 +197,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 
-INSERT INTO PRODUCTO_ubica_VIVEROS (PRODUCTO_Cod_producto, VIVEROS_Latitud, VIVEROS_Longitud) VALUES (1111, 54321, 12345);
+INSERT INTO PRODUCTO_ubica_VIVEROS (PRODUCTO_Cod_producto, VIVEROS_Latitud, VIVEROS_Longitud, Cantidad_Stock) VALUES (1111, 54321, 12345, 3);
+INSERT INTO PRODUCTO_ubica_VIVEROS (PRODUCTO_Cod_producto, VIVEROS_Latitud, VIVEROS_Longitud, Cantidad_Stock) VALUES (1111, 23423, 645645, 2);
 
 COMMIT;
 
@@ -219,18 +221,6 @@ START TRANSACTION;
 INSERT INTO compra_PRODUCTO_EMPLEADO_CLIENTE (Fecha, PRODUCTO_Cod_producto, CLIENTE_DNI, EMPLEADO_DNI, Cantidad) VALUES ('2021-05-14', 1111, '11111111A', '42245738W', 1);
 
 COMMIT;
-
------------
--- Ejercicio triggers 1
------------
-
--- CREATE OR REPLACE FUNCTION create_email(domain varchar) RETURNS TABLE(email varchar) AS $create_email$
---   BEGIN
---     RETURN QUERY SELECT CONCAT(Nombre,'@',domain) 
---     FROM EMPLEADO
---     WHERE DNI=;
---   END;
--- $create_email$ LANGUAGE plpgsql;
 
 
 /* Create function 'create_email' */
@@ -270,3 +260,55 @@ DROP TRIGGER IF EXISTS locality_check ON VIVEROS;
 
 CREATE TRIGGER locality_check BEFORE INSERT ON VIVEROS
 FOR EACH ROW EXECUTE PROCEDURE locality_check();
+
+
+
+/* Create funtion 'stock_update_on_insert' */
+CREATE OR REPLACE FUNCTION stock_update_on_insert() RETURNS TRIGGER AS $stock_update_on_insert$
+        BEGIN
+                UPDATE PRODUCTO
+                SET Stock = Stock + new.Cantidad_Stock
+                WHERE Cod_Producto = new.PRODUCTO_Cod_Producto;
+        RETURN NEW;
+        END;
+$stock_update_on_insert$ LANGUAGE plpgsql;
+
+/* Create trigger 'stock_update_on_insert' */
+DROP TRIGGER IF EXISTS stock_update_on_insert ON PRODUCTO_ubica_VIVEROS;
+
+CREATE TRIGGER stock_update_on_insert BEFORE INSERT ON PRODUCTO_ubica_VIVEROS
+FOR EACH ROW EXECUTE PROCEDURE stock_update_on_insert();
+
+
+/* Create funtion 'stock_update_on_update' */
+CREATE OR REPLACE FUNCTION stock_update_on_update() RETURNS TRIGGER AS $stock_update_on_update$
+        BEGIN
+                UPDATE PRODUCTO
+                SET Stock = Stock - old.Cantidad_Stock + new.Cantidad_Stock
+                WHERE Cod_Producto = new.PRODUCTO_Cod_Producto;
+                RETURN NEW;
+        END;
+$stock_update_on_update$ LANGUAGE plpgsql;
+
+/* Create trigger 'stock_update_on_update' */
+DROP TRIGGER IF EXISTS stock_update_on_update ON PRODUCTO_ubica_VIVEROS;
+
+CREATE TRIGGER stock_update_on_update BEFORE UPDATE ON PRODUCTO_ubica_VIVEROS
+FOR EACH ROW EXECUTE PROCEDURE stock_update_on_update();
+
+
+/* Create funtion 'stock_update_on_update' */
+CREATE OR REPLACE FUNCTION stock_update_on_delete() RETURNS TRIGGER AS $stock_update_on_delete$
+        BEGIN
+                UPDATE PRODUCTO
+                SET Stock = Stock - old.Cantidad_Stock
+                WHERE Cod_Producto = old.PRODUCTO_Cod_Producto;
+                RETURN OLD;
+        END;
+$stock_update_on_delete$ LANGUAGE plpgsql;
+
+/* Create trigger 'stock_update_on_update' */
+DROP TRIGGER IF EXISTS stock_update_on_delete ON PRODUCTO_ubica_VIVEROS;
+
+CREATE TRIGGER stock_update_on_delete BEFORE DELETE ON PRODUCTO_ubica_VIVEROS
+FOR EACH ROW EXECUTE PROCEDURE stock_update_on_delete();
