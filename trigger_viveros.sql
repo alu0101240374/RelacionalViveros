@@ -140,89 +140,6 @@ CREATE TABLE IF NOT EXISTS compra_PRODUCTO_EMPLEADO_CLIENTE (
 
 
 
-
-START TRANSACTION;
-
-INSERT INTO VIVEROS (Latitud, Longitud, Localidad) VALUES (54321, 12345, 'La Laguna');
-INSERT INTO VIVEROS (Latitud, Longitud, Localidad) VALUES (23423, 645645, 'Adeje');
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table ZONAS
--- -----------------------------------------------------
-START TRANSACTION;
-
-INSERT INTO ZONAS (VIVEROS_Latitud, VIVEROS_Longitud, Nombre) VALUES (54321, 12345, 'ALMACEN');
-INSERT INTO ZONAS (VIVEROS_Latitud, VIVEROS_Longitud, Nombre) VALUES (54321, 12345, 'RECOGIDA');
-INSERT INTO ZONAS (VIVEROS_Latitud, VIVEROS_Longitud, Nombre) VALUES (54321, 12345, 'ENTREGA');
-INSERT INTO ZONAS (VIVEROS_Latitud, VIVEROS_Longitud, Nombre) VALUES (54321, 12345, 'CAJAS');
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table EMPLEADO
--- -----------------------------------------------------
-START TRANSACTION;
-
-INSERT INTO EMPLEADO (DNI, Sueldo, Css, Ambiguedad, Nombre, Correo) VALUES ('42245738W', 1000, '453834773', '1.50', 'Perita', NULL);
-INSERT INTO EMPLEADO (DNI, Sueldo, Css, Ambiguedad, Nombre, Correo) VALUES ('40045738W', 1000, '453834773', '1.50', 'Perita', NULL);
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table Trabaja_Zona_Empleado
--- -----------------------------------------------------
-START TRANSACTION;
-
-INSERT INTO trabaja_Zona_Empleado (fecha_ini, fecha_fin, ventas, EMPLEADO_DNI, ZONAS_VIVEROS_Latitud, ZONAS_VIVEROS_Longitud, ZONAS_Nombre) VALUES ('2021-05-08', '2021-06-08', NULL, '42245738W', 54321, 12345, 'ALMACEN');
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table PRODUCTO
--- -----------------------------------------------------
-START TRANSACTION;
-
-INSERT INTO PRODUCTO (Cod_producto, Precio) VALUES (1111, 1.95);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table PRODUCTO_ubica_VIVEROS
--- -----------------------------------------------------
-START TRANSACTION;
-
-INSERT INTO PRODUCTO_ubica_VIVEROS (PRODUCTO_Cod_producto, VIVEROS_Latitud, VIVEROS_Longitud, Cantidad_Stock) VALUES (1111, 54321, 12345, 3);
-INSERT INTO PRODUCTO_ubica_VIVEROS (PRODUCTO_Cod_producto, VIVEROS_Latitud, VIVEROS_Longitud, Cantidad_Stock) VALUES (1111, 23423, 645645, 2);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table CLIENTE
--- -----------------------------------------------------
-START TRANSACTION;
-
-INSERT INTO CLIENTE (DNI, Bonificacion, Total_mesual) VALUES ('11111111A', NULL, NULL);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table compra_PRODUCTO_EMPLEADO_CLIENTE
--- -----------------------------------------------------
-START TRANSACTION;
-
-INSERT INTO compra_PRODUCTO_EMPLEADO_CLIENTE (Fecha, PRODUCTO_Cod_producto, CLIENTE_DNI, EMPLEADO_DNI, Cantidad) VALUES ('2021-05-14', 1111, '11111111A', '42245738W', 1);
-
-COMMIT;
-
-
 /* Create function 'create_email' */
 CREATE OR REPLACE FUNCTION create_email() RETURNS TRIGGER AS $create_email$
    BEGIN
@@ -312,3 +229,83 @@ DROP TRIGGER IF EXISTS stock_update_on_delete ON PRODUCTO_ubica_VIVEROS;
 
 CREATE TRIGGER stock_update_on_delete BEFORE DELETE ON PRODUCTO_ubica_VIVEROS
 FOR EACH ROW EXECUTE PROCEDURE stock_update_on_delete();
+
+
+START TRANSACTION;
+
+INSERT INTO VIVEROS (Latitud, Longitud, Localidad) VALUES (54321, 12345, 'La Laguna');
+INSERT INTO VIVEROS (Latitud, Longitud, Localidad) VALUES (23423, 645645, 'Adeje');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table ZONAS
+-- -----------------------------------------------------
+START TRANSACTION;
+
+INSERT INTO ZONAS (VIVEROS_Latitud, VIVEROS_Longitud, Nombre) VALUES (54321, 12345, 'ALMACEN');
+INSERT INTO ZONAS (VIVEROS_Latitud, VIVEROS_Longitud, Nombre) VALUES (54321, 12345, 'RECOGIDA');
+INSERT INTO ZONAS (VIVEROS_Latitud, VIVEROS_Longitud, Nombre) VALUES (54321, 12345, 'ENTREGA');
+INSERT INTO ZONAS (VIVEROS_Latitud, VIVEROS_Longitud, Nombre) VALUES (54321, 12345, 'CAJAS');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table EMPLEADO
+-- -----------------------------------------------------
+START TRANSACTION;
+
+INSERT INTO EMPLEADO (DNI, Sueldo, Css, Ambiguedad, Nombre, Correo) VALUES ('42245738W', 1000, '453834773', '1.50', 'Perita', NULL);
+INSERT INTO EMPLEADO (DNI, Sueldo, Css, Ambiguedad, Nombre, Correo) VALUES ('40045738W', 1000, '453834773', '1.50', 'Perita', NULL);
+COMMIT;
+
+
+-- -----------------------------------------------------
+-- Data for table Trabaja_Zona_Empleado
+-- -----------------------------------------------------
+START TRANSACTION;
+
+INSERT INTO trabaja_Zona_Empleado (fecha_ini, fecha_fin, ventas, EMPLEADO_DNI, ZONAS_VIVEROS_Latitud, ZONAS_VIVEROS_Longitud, ZONAS_Nombre) VALUES ('2021-05-08', '2021-06-08', NULL, '42245738W', 54321, 12345, 'ALMACEN');
+
+COMMIT;
+
+
+-- -----------------------------------------------------
+-- Data for table PRODUCTO
+-- -----------------------------------------------------
+START TRANSACTION;
+
+INSERT INTO PRODUCTO (Cod_producto, Precio) VALUES (1111, 1.95);
+
+COMMIT;
+
+
+-- -----------------------------------------------------
+-- Data for table PRODUCTO_ubica_VIVEROS
+-- -----------------------------------------------------
+START TRANSACTION;
+
+INSERT INTO PRODUCTO_ubica_VIVEROS (PRODUCTO_Cod_producto, VIVEROS_Latitud, VIVEROS_Longitud, Cantidad_Stock) VALUES (1111, 54321, 12345, 3);
+INSERT INTO PRODUCTO_ubica_VIVEROS (PRODUCTO_Cod_producto, VIVEROS_Latitud, VIVEROS_Longitud, Cantidad_Stock) VALUES (1111, 23423, 645645, 2);
+
+COMMIT;
+
+
+-- -----------------------------------------------------
+-- Data for table CLIENTE
+-- -----------------------------------------------------
+START TRANSACTION;
+
+INSERT INTO CLIENTE (DNI, Bonificacion, Total_mesual) VALUES ('11111111A', NULL, NULL);
+
+COMMIT;
+
+
+-- -----------------------------------------------------
+-- Data for table compra_PRODUCTO_EMPLEADO_CLIENTE
+-- -----------------------------------------------------
+START TRANSACTION;
+
+INSERT INTO compra_PRODUCTO_EMPLEADO_CLIENTE (Fecha, PRODUCTO_Cod_producto, CLIENTE_DNI, EMPLEADO_DNI, Cantidad) VALUES ('2021-05-14', 1111, '11111111A', '42245738W', 1);
+
+COMMIT;
